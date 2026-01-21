@@ -4,12 +4,12 @@ This repository is a starter recreation of **Miku Flick 02** focused on modern i
 
 ## Compatibility Goals
 
-- **Minimum iOS target**: iOS 16 (modern SwiftUI navigation + haptics support).
-- **Optimized for**: iOS 17+ with adaptive layouts.
+- **Minimum iOS target**: iOS 18 (modern SwiftUI navigation + haptics support).
+- **Optimized for**: iOS 18+ with adaptive layouts.
 
 ## What Exists Today
 
-- A SwiftUI starter interface with score, combo, and note lane placeholders.
+- A SwiftUI starter interface with a song selection list, score/combo display, and note lane placeholders.
 - A lightweight `GameViewModel` to drive state changes and a small note sequence.
 - A settings sheet with gameplay + audio placeholders.
 
@@ -18,7 +18,7 @@ This repository is a starter recreation of **Miku Flick 02** focused on modern i
 1. Replace the placeholder note sequence with real song timing data.
 2. Introduce gesture-driven flick detection (directional swipes + multi-touch).
 3. Add audio playback using `AVAudioEngine` with beat-synced scheduling.
-4. Build a results screen + song selection.
+4. Build a results screen + song metadata detail panel.
 
 ## How To Use
 

@@ -2,57 +2,109 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject private var viewModel: GameViewModel
-    @State private var showingSettings = false
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 24) {
-                VStack(spacing: 8) {
+            SongSelectionView(songs: viewModel.songs) { song in
+                viewModel.selectSong(song)
+            }
+            .navigationDestination(for: Song.self) { song in
+                GameplayView(song: song)
+            }
+        }
+    }
+}
+
+private struct SongSelectionView: View {
+    let songs: [Song]
+    let onSelect: (Song) -> Void
+
+    var body: some View {
+        List {
+            Section {
+                ForEach(songs) { song in
+                    NavigationLink(value: song) {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text(song.title)
+                                .font(.headline)
+                            Text("\(song.artist) • \(song.difficulty) • \(song.bpm) BPM")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding(.vertical, 6)
+                    }
+                    .simultaneousGesture(TapGesture().onEnded {
+                        onSelect(song)
+                    })
+                }
+            } header: {
+                VStack(alignment: .leading, spacing: 6) {
                     Text("Miku Flick 02")
                         .font(.largeTitle.bold())
-                    Text("Reimagined for modern iOS")
+                    Text("Select a song to begin")
                         .foregroundStyle(.secondary)
                 }
-
-                ScoreCard(score: viewModel.score, combo: viewModel.combo)
-
-                VStack(spacing: 16) {
-                    Text("Upcoming Note")
-                        .font(.headline)
-                    NoteLaneView(note: viewModel.currentNote)
-                }
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(.thinMaterial)
-                .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-
-                Button {
-                    viewModel.handleFlick()
-                } label: {
-                    Text(viewModel.isPlaying ? "Flick!" : "Start")
-                        .font(.title2.bold())
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(viewModel.isPlaying ? Color.mint : Color.blue)
-                        .foregroundStyle(.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                }
-
-                Spacer()
+                .textCase(nil)
+                .padding(.vertical, 8)
             }
+        }
+        .listStyle(.insetGrouped)
+        .navigationTitle("Song Select")
+    }
+}
+
+private struct GameplayView: View {
+    let song: Song
+    @EnvironmentObject private var viewModel: GameViewModel
+    @State private var showingSettings = false
+
+    var body: some View {
+        VStack(spacing: 24) {
+            VStack(spacing: 8) {
+                Text(song.title)
+                    .font(.largeTitle.bold())
+                Text("\(song.artist) • \(song.difficulty)")
+                    .foregroundStyle(.secondary)
+            }
+
+            ScoreCard(score: viewModel.score, combo: viewModel.combo)
+
+            VStack(spacing: 16) {
+                Text("Upcoming Note")
+                    .font(.headline)
+                NoteLaneView(note: viewModel.currentNote)
+            }
+            .frame(maxWidth: .infinity)
             .padding()
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        showingSettings = true
-                    } label: {
-                        Image(systemName: "gearshape")
-                    }
+            .background(.thinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+
+            Button {
+                viewModel.handleFlick()
+            } label: {
+                Text(viewModel.isPlaying ? "Flick!" : "Start")
+                    .font(.title2.bold())
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(viewModel.isPlaying ? Color.mint : Color.blue)
+                    .foregroundStyle(.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            }
+
+            Spacer()
+        }
+        .padding()
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    showingSettings = true
+                } label: {
+                    Image(systemName: "gearshape")
                 }
             }
-            .sheet(isPresented: $showingSettings) {
-                SettingsView(settings: $viewModel.settings)
-            }
+        }
+        .sheet(isPresented: $showingSettings) {
+            SettingsView(settings: $viewModel.settings)
         }
     }
 }

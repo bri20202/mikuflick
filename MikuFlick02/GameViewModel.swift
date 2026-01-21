@@ -2,6 +2,8 @@ import Foundation
 
 @MainActor
 final class GameViewModel: ObservableObject {
+    @Published private(set) var songs: [Song] = Song.sampleLibrary
+    @Published private(set) var selectedSong: Song?
     @Published private(set) var score = 0
     @Published private(set) var combo = 0
     @Published private(set) var isPlaying = false
@@ -15,6 +17,11 @@ final class GameViewModel: ObservableObject {
         Note(title: "Flick ↓", subtitle: "Swipe downward on cue"),
         Note(title: "Flick ←", subtitle: "Swipe left to finish the bar")
     ]
+
+    func selectSong(_ song: Song) {
+        selectedSong = song
+        resetRun()
+    }
 
     func handleFlick() {
         if !isPlaying {
@@ -47,6 +54,20 @@ final class GameViewModel: ObservableObject {
         noteIndex = (noteIndex + 1) % noteSequence.count
         currentNote = noteSequence[noteIndex]
     }
+}
+
+struct Song: Identifiable, Hashable {
+    let id = UUID()
+    let title: String
+    let artist: String
+    let difficulty: String
+    let bpm: Int
+
+    static let sampleLibrary: [Song] = [
+        Song(title: "Starlight Flicker", artist: "Virtual Pulse", difficulty: "Normal", bpm: 148),
+        Song(title: "Neon Horizon", artist: "Signal Drift", difficulty: "Hard", bpm: 172),
+        Song(title: "Skyline Echo", artist: "Kiku Ray", difficulty: "Expert", bpm: 196)
+    ]
 }
 
 struct Note: Hashable {
